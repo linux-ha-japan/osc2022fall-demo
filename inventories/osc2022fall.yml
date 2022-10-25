@@ -33,7 +33,7 @@ hacluster_resources:
     pcsgen_csv: "{{ playbook_dir }}/../pm_pcsgen-config/pm_pcsgen_osc2022fall.csv"
     ipaddr: { ip: 192.168.59.101, nic: eth4, cidr_netmask: 24 }
     ping:   { host_list: 192.168.59.1 }
-    pgsql:  
+    pgsql:
       pgctl: /usr/pgsql-13/bin/pg_ctl
       psql:  /usr/pgsql-13/bin/psql
       pgdata: "{{ PGDATA }}"

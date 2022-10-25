@@ -3,7 +3,7 @@
   gather_facts: no
   max_fail_percentage: 0
 
-  tasks: 
+  tasks:
     - import_tasks: ./vagrant/10-vagrant-wsl2.yml
       environment:
         VAGRANT_CWD: "{{ playbook_dir }}/vagrant"
