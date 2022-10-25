@@ -1,0 +1,8 @@
+- import_playbook: ./ansible-pacemaker-rocky8/10-pacemaker-install.yml
+- import_playbook: ./ansible-pacemaker-rocky8/11-pm_extra_tools-install.yml
+- import_playbook: ./ansible-pacemaker-rocky8/12-pacemaker-config.yml
+
+- import_playbook: ./ansible-pacemaker-rocky8/20-pacemaker-start.yml
+
+- import_playbook: ./ansible-pacemaker-rocky8/30-pm_pcsgen-resources.yml
+

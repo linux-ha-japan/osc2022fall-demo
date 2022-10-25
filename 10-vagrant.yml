@@ -1,0 +1,11 @@
+- hosts: localhost
+  become: false
+  gather_facts: no
+  max_fail_percentage: 0
+
+  tasks: 
+    - import_tasks: ./vagrant/10-vagrant-wsl2.yml
+      environment:
+        VAGRANT_CWD: "{{ playbook_dir }}/vagrant"
+        WSLENV: VAGRANT_CWD/p:http_proxy:https_proxy
+      tags: always

@@ -1,0 +1,120 @@
+all:
+  vars:
+    ### ansible-pacemaker
+    HACLUSTER_PASSWORD: pacemaker
+    CLUSTER_NAME: cluster_name
+    FENCE_AGENTS: [fence_ipmilan]
+
+    ### ansible-virtualbmc
+    VBMC_HYPERVISOR: vbox
+    VBMC_VERSION: devel-vbox-2.0		# for VirtualBox
+    VBMC_VENV_DIR: ./venv-vbmc
+    VBMC_IPMI_IF: eth0
+    VBMC_WSL2_SUBNET_IP: 192.168.99.1
+
+
+hacluster:
+  hosts:
+    node1:
+      manage_addr: 192.168.56.11
+      link0_addr:  192.168.57.11
+      link1_addr:  192.168.58.11
+    node2:
+      manage_addr: 192.168.56.12
+      link0_addr:  192.168.57.12
+      link1_addr:  192.168.58.12
+
+### ansible-pacemaker examples
+hacluster_resources:
+  children:
+    hacluster:
+  vars:
+    # pcsgen_cvs - relative path from ansible-pacemaker-rocky8 for running from import_playbook
+    pcsgen_csv: "{{ playbook_dir }}/../pm_pcsgen-config/pm_pcsgen_osc2022fall.csv"
+    ipaddr: { ip: 192.168.59.101, nic: eth4, cidr_netmask: 24 }
+    ping:   { host_list: 192.168.59.1 }
+    pgsql:  
+      pgctl: /usr/pgsql-13/bin/pg_ctl
+      psql:  /usr/pgsql-13/bin/psql
+      pgdata: "{{ PGDATA }}"
+      pgport: "{{ PGPORT }}"
+
+### ansible-postgresql-shared
+# for iSCSI shared storage configuration
+iscsi_target:
+  hosts:
+    storage:
+
+iscsi_initiator:
+  children:
+    hacluster:
+
+iscsi:
+  children:
+    iscsi_target:
+    iscsi_initiator:
+  vars:
+    TARGET_PORTS: # multipath
+      - 192.168.56.19:3260
+      - 192.168.57.19:3260
+    TARGET_IQN: iqn.2022-09.local.storage:storage1
+    TARGET_LUN_SIZE: 1G
+
+# PostgreSQL shared storage configuration variables
+hacluster_shared:
+  children:
+    hacluster:
+  vars:
+    SHAREDDISK_DEV: /dev/mapper/mpatha
+    SHAREDDISK_PARTITIONS:
+      - { number: 1, part_start:     0%, part_end:   4MiB, fstype:     }
+      - { number: 2, part_start:   4MiB, part_end: 600MiB, fstype: xfs }
+      - { number: 3, part_start: 600MiB, part_end: 800MiB, fstype: xfs }
+      - { number: 4, part_start: 800MiB, part_end:   100%, fstype: xfs }
+
+
+    SBD_DEVICE: /dev/mapper/mpatha1
+    PG_FILESYSTEMS:
+      - { resourceid: filesystem1, mountpoint: /shared/pgdata, device: /dev/mapper/mpatha2 }
+      - { resourceid: filesystem2, mountpoint: /shared/pgwal,  device: /dev/mapper/mpatha3 }
+      - { resourceid: filesystem3, mountpoint: /shared/pgarch, device: /dev/mapper/mpatha4 }
+    # (Optional) subdirectories to be created under the mountpoints if necessary
+    PG_SUBDIRECTORIES:
+      - /shared/pgdata/data
+
+    PGDATA: /shared/pgdata/data
+    PGPORT: 5432
+    PG_INITDB_OPTS: --encoding=UTF-8 --no-locale
+    # (Optional) create customized files and define these variables if necessary
+    #PG_HBA_CONF_FILE: {{ role_path }}/files/pg_hba.conf
+    #POSTGRESQL_CONF_FILE: {{ role_path }}/files/postgresql.conf
+
+
+### ansible-virtualbmc
+hacluster_vbmc:
+  hosts:
+    node1:
+      IPMI_IP:   192.168.99.91
+      IPMI_USER: pacemaker
+      IPMI_PASS: pacemakerpass1
+    node2:
+      IPMI_IP:   192.168.99.92
+      IPMI_USER: pacemaker
+      IPMI_PASS: pacemakerpass1
+
+### vagrant
+hostvars_vagrant:
+  hosts:
+    node1:
+      ansible_host: 192.168.56.11
+      ansible_user: vagrant
+      ansible_ssh_private_key_file: ./vagrant/.vagrant/machines/node1/virtualbox/private_key
+    node2:
+      ansible_host: 192.168.56.12
+      ansible_user: vagrant
+      ansible_ssh_private_key_file: ./vagrant/.vagrant/machines/node2/virtualbox/private_key
+    storage:
+      ansible_host: 192.168.56.19
+      ansible_user: vagrant
+      ansible_ssh_private_key_file: ./vagrant/.vagrant/machines/storage/virtualbox/private_key
+

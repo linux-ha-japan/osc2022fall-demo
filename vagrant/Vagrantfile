@@ -1,0 +1,65 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "generic/rocky8"
+  config.vm.box_version = "4.1.16"
+  #config.vm.box = "rockylinux/8"
+  #config.vm.box_version = "5.0.0"
+
+  # VirtualBox
+  config.vm.provider :virtualbox do |v|
+    #v.customize ["modifyvm", :id, "--memory", "2048"]
+    v.memory = 2048
+  end
+
+  # proxy configuration
+  if Vagrant.has_plugin?("vagrant-proxyconf") && ENV['http_proxy']
+    config.proxy.http     = ENV['http_proxy']
+    config.proxy.https    = ENV['https_proxy']
+    config.proxy.no_proxy = ENV['no_proxy'] || "localhost,127.0.0.1"
+  end
+
+  # disable the default shared folder to avoid vboxsf failure
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  
+  config.vm.define "storage" do |storage|
+    storage.vm.hostname = "storage"
+    storage.vm.network "private_network", ip: "192.168.56.19"
+    storage.vm.network "private_network", ip: "192.168.57.19"
+    storage.vm.network "private_network", ip: "192.168.58.19"
+    storage.vm.network "private_network", ip: "192.168.59.19"
+    storage.vm.network "forwarded_port", id: "ssh", guest: 22, host: 2229
+    storage.vm.provider :virtualbox do |v|
+      v.name = "storage"
+    end
+    #config_synced_folder("storage", storage)
+  end
+
+  config.vm.define "node1" do |node1|
+    node1.vm.hostname = "node1"
+    node1.vm.network "private_network", ip: "192.168.56.11"
+    node1.vm.network "private_network", ip: "192.168.57.11"
+    node1.vm.network "private_network", ip: "192.168.58.11"
+    node1.vm.network "private_network", ip: "192.168.59.11"
+    node1.vm.network "forwarded_port", id: "ssh", guest: 22, host: 2221
+    node1.vm.provider :virtualbox do |v|
+      v.name = "node1"
+    end
+    #config_synced_folder("node1", node1)
+  end
+
+  config.vm.define "node2" do |node2|
+    node2.vm.hostname = "node2"
+    node2.vm.network "private_network", ip: "192.168.56.12"
+    node2.vm.network "private_network", ip: "192.168.57.12"
+    node2.vm.network "private_network", ip: "192.168.58.12"
+    node2.vm.network "private_network", ip: "192.168.59.12"
+    node2.vm.network "forwarded_port", id: "ssh", guest: 22, host: 2222
+    node2.vm.provider :virtualbox do |v|
+      v.name = "node2"
+    end
+    #config_synced_folder("node2", node2)
+  end
+
+end
