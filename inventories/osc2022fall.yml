@@ -5,6 +5,9 @@ all:
     CLUSTER_NAME: cluster_name
     FENCE_AGENTS: [fence_ipmilan]
 
+    ### ansible-postgresql-shared
+    pg_rev: '15.0-1PGDG'
+
     ### ansible-virtualbmc
     VBMC_HYPERVISOR: vbox
     VBMC_VERSION: devel-vbox-2.0		# for VirtualBox
@@ -34,8 +37,8 @@ hacluster_resources:
     ipaddr: { ip: 192.168.59.101, nic: eth4, cidr_netmask: 24 }
     ping:   { host_list: 192.168.59.1 }
     pgsql:
-      pgctl: /usr/pgsql-13/bin/pg_ctl
-      psql:  /usr/pgsql-13/bin/psql
+      pgctl: /usr/pgsql-15/bin/pg_ctl
+      psql:  /usr/pgsql-15/bin/psql
       pgdata: "{{ PGDATA }}"
       pgport: "{{ PGPORT }}"
 
