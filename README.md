@@ -2,9 +2,7 @@
 
 ## Seminar ##
  * Slides
-   * (TBD)
- * Introduction
-   * https://event.ospn.jp/osc2022-online-fall/session/681272
+   * https://linux-ha.osdn.jp/wp/archives/5044
 
 ## Install demo environment
 
@@ -14,11 +12,12 @@
   * Memory: 16GB or more
 * Software
   * Windows 10 21H2
-  * VirtualBox-6.1.14-140239-Win
+  * VirtualBox-6.1.40-154048-Win.exe
   * vagrant_2.3.2_windows_amd64.msi
   * WSL2: Ubuntu-20.04 LTS
-  * Python-3.8.2 (Ubuntu bundled)
-  * ansible-2.12.9
+    * Python-3.8.2 (Ubuntu bundled)
+    * ansible-2.12.9
+  * Vagrant Box: generic/rocky8 v4.1.16
 
 
 ### Host installation
@@ -33,9 +32,7 @@
 > wsl --install -d Ubuntu
 ```
  * For Symantec Endpoint Protection(SEP) users
-   * see below
-      * https://kemasoft.net/?vm/wsl2%A4%C8SEP%A4%C8stone#w98afb3e
-      * https://computational-sediment-hyd.hatenablog.jp/entry/2022/05/02/231428
+   * see Appendix.
 
 ### Configurations for WSL2
  * /etc/wsl.conf
@@ -65,7 +62,7 @@ Acquire::http::Timeout "300";
 ### restart WSL2 to take effects
 ```
 $ exit
-> wsl –-shutdown
+> wsl --shutdown
 > wsl
 $
 ```
@@ -106,5 +103,9 @@ $ ansible-playbook 40-pacemaker.yml
  * VirtualBMC (vbox support) - IPMI fencing for VirtualBox VMs
    * https://github.com/kskmori/virtualbmc-vbox/tree/devel-vbox-2.0
 
-## Known issues
- * TBD
+## Appendix
+ * For Symantec Endpoint Protection(SEP) users
+   * an additional setting is required to allow network connections to outside
+   * see below
+     * https://kemasoft.net/?vm/wsl2%A4%C8SEP%A4%C8stone#w98afb3e
+     * https://computational-sediment-hyd.hatenablog.jp/entry/2022/05/02/231428
