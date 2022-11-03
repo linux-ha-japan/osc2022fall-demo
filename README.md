@@ -92,6 +92,18 @@ $ ansible-playbook 30-postgresql-shared.yml
 $ ansible-playbook 40-pacemaker.yml
 ```
 
+## misc. tasks
+
+ * restart the demo environment after the host was rebooted
+```
+$ ansible-playbook 80-demo-restart.yml -K
+```
+
+ * stop the demo environment
+```
+$ ansible-playbook 89-demo-stop.yml -K
+```
+
 ## Related Repositories
 
  * Playbooks for Pacemaker installation
