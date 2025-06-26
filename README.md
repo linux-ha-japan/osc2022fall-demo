@@ -2,7 +2,7 @@
 
 ## Seminar ##
  * Slides
-   * https://linux-ha.osdn.jp/wp/archives/5044
+   * https://linux-ha-japan.github.io/wp/archives/5044
 
 ## Install demo environment
 
