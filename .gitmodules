@@ -1,9 +1,9 @@
-[submodule "ansible-pacemaker-rocky8"]
-	path = ansible-pacemaker-rocky8
-	url = https://github.com/kskmori/ansible-pacemaker-rocky8
+[submodule "ansible-pacemaker"]
+	path = ansible-pacemaker
+	url = https://github.com/linux-ha-japan/ansible-pacemaker
 [submodule "ansible-postgresql-shared"]
 	path = ansible-postgresql-shared
-	url = https://github.com/kskmori/ansible-postgresql-shared
+	url = https://github.com/linux-ha-japan/ansible-postgresql-shared
 [submodule "ansible-virtualbmc"]
 	path = ansible-virtualbmc
-	url = https://github.com/kskmori/ansible-virtualbmc
+	url = https://github.com/linux-ha-japan/ansible-virtualbmc
