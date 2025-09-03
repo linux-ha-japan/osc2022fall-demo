@@ -4,9 +4,11 @@ all:
     HACLUSTER_PASSWORD: pacemaker
     CLUSTER_NAME: cluster_name
     FENCE_AGENTS: [fence_ipmilan]
+    #FENCE_AGENTS: [fence_sbd]
+    pm_extra_tools: 1.6-1.el9
 
     ### ansible-postgresql-shared
-    pg_rev: '15.0-1PGDG'
+    pg_rev: '16.2-1PGDG.rhel9'
 
     ### ansible-virtualbmc
     VBMC_HYPERVISOR: vbox
@@ -32,13 +34,13 @@ hacluster_resources:
   children:
     hacluster:
   vars:
-    # pcsgen_cvs - relative path from ansible-pacemaker-rocky8 for running from import_playbook
+    # pcsgen_cvs - relative path from ansible-pacemaker for running from import_playbook
     pcsgen_csv: "{{ playbook_dir }}/../pm_pcsgen-config/pm_pcsgen_osc2022fall.csv"
     ipaddr: { ip: 192.168.59.101, nic: eth4, cidr_netmask: 24 }
     ping:   { host_list: 192.168.59.1 }
     pgsql:
-      pgctl: /usr/pgsql-15/bin/pg_ctl
-      psql:  /usr/pgsql-15/bin/psql
+      pgctl: /usr/pgsql-16/bin/pg_ctl
+      psql:  /usr/pgsql-16/bin/psql
       pgdata: "{{ PGDATA }}"
       pgport: "{{ PGPORT }}"
 
@@ -61,26 +63,32 @@ iscsi:
       - 192.168.56.19:3260
       - 192.168.57.19:3260
     TARGET_IQN: iqn.2022-09.local.storage:storage1
-    TARGET_LUN_SIZE: 1G
+    TARGET_LUNS:
+      - { name: lun0, size: 4M }
+      - { name: lun1, size: 1G }
+      - { name: lun2, size: 1G }
+      - { name: lun3, size: 1G }
 
 # PostgreSQL shared storage configuration variables
 hacluster_shared:
   children:
     hacluster:
   vars:
-    SHAREDDISK_DEV: /dev/mapper/mpatha
     SHAREDDISK_PARTITIONS:
-      - { number: 1, part_start:     0%, part_end:   4MiB, fstype:     }
-      - { number: 2, part_start:   4MiB, part_end: 600MiB, fstype: xfs }
-      - { number: 3, part_start: 600MiB, part_end: 800MiB, fstype: xfs }
-      - { number: 4, part_start: 800MiB, part_end:   100%, fstype: xfs }
-
+      /dev/mapper/mpatha:
+        - { number: 1, part_start:     0%, part_end:   100%, fstype: }
+      /dev/mapper/mpathb:
+        - { number: 1, part_start:     0%, part_end:   100%, fstype: xfs }
+      /dev/mapper/mpathc:
+        - { number: 1, part_start:     0%, part_end:   100%, fstype: xfs }
+      /dev/mapper/mpathd:
+        - { number: 1, part_start:     0%, part_end:   100%, fstype: xfs }
 
     SBD_DEVICE: /dev/mapper/mpatha1
     PG_FILESYSTEMS:
-      - { resourceid: filesystem1, mountpoint: /shared/pgdata, device: /dev/mapper/mpatha2 }
-      - { resourceid: filesystem2, mountpoint: /shared/pgwal,  device: /dev/mapper/mpatha3 }
-      - { resourceid: filesystem3, mountpoint: /shared/pgarch, device: /dev/mapper/mpatha4 }
+      - { resourceid: filesystem1, mountpoint: /shared/pgdata, device: /dev/mapper/mpathb1 }
+      - { resourceid: filesystem2, mountpoint: /shared/pgwal,  device: /dev/mapper/mpathc1 }
+      - { resourceid: filesystem3, mountpoint: /shared/pgarch, device: /dev/mapper/mpathd1 }
     # (Optional) subdirectories to be created under the mountpoints if necessary
     PG_SUBDIRECTORIES:
       - /shared/pgdata/data
