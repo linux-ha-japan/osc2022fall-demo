@@ -11,13 +11,15 @@
 * Hardware
   * Memory: 16GB or more
 * Software
-  * Windows 10 21H2
-  * VirtualBox-6.1.40-154048-Win.exe
-  * vagrant_2.3.2_windows_amd64.msi
-  * WSL2: Ubuntu-20.04 LTS
-    * Python-3.8.2 (Ubuntu bundled)
-    * ansible-2.12.9
-  * Vagrant Box: generic/rocky8 v4.1.16
+  * Windows 11 24H2
+  * VirtualBox-7.1.12-169651-Win.exe
+  * vagrant_2.4.7_windows_amd64.msi
+  * WSL2:
+    * Ubuntu-24.04 LTS
+      * ansible-core 2.18.8
+    * AlmaLinux-9
+      * ansible-core 2.14.18
+  * Vagrant Box: rockylinux/9 v6.0.0
 
 
 ### Host installation
@@ -53,7 +55,7 @@ export https_proxy=http://PROXY:8080/
 #export VAGRANT_CWD=/mnt/c/Users/<playbook_dir>/vagrant
 export WSLENV=VAGRANT_CWD/p:http_proxy:https_proxy
 ```
- * /etc/apt/apt.conf.d/99proxy
+ * /etc/apt/apt.conf.d/99proxy (Ubuntu only)
 ```
 Acquire::http::proxy "http://PROXY:8080/";
 Acquire::https::proxy "http://PROXY:8080/";
@@ -66,7 +68,7 @@ $ exit
 > wsl
 $
 ```
-### Install ansible in WSL2
+### Install ansible in WSL2 (Ubuntu)
 ```
 $ sudo apt update
 $ sudo apt install software-properties-common
@@ -74,6 +76,12 @@ $ sudo add-apt-repository --yes --update ppa:ansible/ansible
 $ sudo apt install ansible
 ```
  * https://docs.ansible.com/ansible/latest/installation_guide/installation_distros.html#installing-ansible-on-ubuntu
+
+### Install ansible in WSL2 (AlmaLinux)
+```
+$ sudo dnf install git
+$ sudo dnf install ansible-core
+```
 
 ## Quick Start
 
@@ -107,13 +115,13 @@ $ ansible-playbook 89-demo-stop.yml -K
 ## Related Repositories
 
  * Playbooks for Pacemaker installation
-   * https://github.com/kskmori/ansible-pacemaker-rocky8
+   * https://github.com/linux-ha-japan/ansible-pacemaker
  * Playbooks for PostgreSQL and iSCSI storage installation
-   * https://github.com/kskmori/ansible-postgresql-shared
+   * https://github.com/linux-ha-japan/ansible-postgresql-shared
  * Playbooks for VirtualBMC installation
-   * https://github.com/kskmori/ansible-virtualbmc
+   * https://github.com/linux-ha-japan/ansible-virtualbmc
  * VirtualBMC (vbox support) - IPMI fencing for VirtualBox VMs
-   * https://github.com/kskmori/virtualbmc-vbox/tree/devel-vbox-2.0
+   * https://github.com/linux-ha-japan/virtualbmc-vbox/tree/devel-vbox-2.0
 
 ## Appendix
  * For Symantec Endpoint Protection(SEP) users
@@ -121,3 +129,10 @@ $ ansible-playbook 89-demo-stop.yml -K
    * see below
      * https://kemasoft.net/?vm/wsl2%A4%C8SEP%A4%C8stone#w98afb3e
      * https://computational-sediment-hyd.hatenablog.jp/entry/2022/05/02/231428
+
+## Update history
+ * 2022/11/03
+   * Initial release for OSC2022 Online/Fall Seminor
+ * 2025/09/04
+   * Move all repositories to the Linux-HA Japan project
+   * Update to Windows 11 / Rocky Linux 9.6
