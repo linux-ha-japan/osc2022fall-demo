@@ -14,3 +14,20 @@
     - "{{ playbook_dir }}/vagrant/.vagrant/machines/node1/virtualbox/private_key"
     - "{{ playbook_dir }}/vagrant/.vagrant/machines/node2/virtualbox/private_key"
     - "{{ playbook_dir }}/vagrant/.vagrant/machines/storage/virtualbox/private_key"
+  tags: sshkeys
+
+# generate private keys for Putty
+#   putty is required to run this task. and use the playgook with --tags=puttygen
+#   Ubuntu
+#     sudo apt install putty-tools
+#   AlmaLinux
+#     sudo dnf install epel-release
+#     sudo dnf install putty
+#
+- name: generate private keys for Putty
+  shell: "puttygen {{ playbook_dir }}/vagrant/.vagrant/machines/{{ item }}/virtualbox/private_key -O private -o {{ playbook_dir }}/vagrant/.vagrant/machines/{{ item }}/virtualbox/private_key.ppk"
+  with_items:
+    - node1
+    - node2
+    - storage
+  tags: never, puttygen
